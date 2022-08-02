@@ -46,29 +46,29 @@ fig2.add_trace(go.Scatter(
      x= df2['Month'], y = df2['Users'],
      name = 'Total Users',
      mode = 'lines',
-     line=dict(width=0.5, color='orange'),
-     stackgroup = 'one'))
+     line=dict(width=5, color='orange'),
+     ))
 
 fig2.add_trace(go.Scatter(
      x= df2['Month'], y = df2['Notebooks'],
      name = 'Total Notebooks',
      mode = 'lines',
-     line=dict(width=0.5,color='lightgreen'),
-     stackgroup = 'one'))
+     line=dict(width=5,color='lightgreen')
+     ))
      
 fig2.add_trace(go.Scatter(
      x= df2['Month'], y = df2['Data Usage'],
-     name = 'GB Data Used',
+     name = 'GB Data',
      mode = 'lines', 
-     line=dict(width=0.5, color='blue'),
-     stackgroup = 'one'))
+     line=dict(width=5, color='blue')
+     ))
      
 fig2.add_trace(go.Scatter(
      x= df2['Month'], y = df2['Logins'],
      name = 'Monthly Logins',
      mode = 'lines', 
-     line=dict(width=0.5, color='darkred'),
-     stackgroup = 'one'))
+     line=dict(width=5, color='darkred')
+     ))
      
 fig2.update_layout(
      title = "LabArchives ELN Usage",
@@ -81,7 +81,7 @@ fig2.update_xaxes(
      tickfont=dict(family='Calibri', color='darkred', size=25))
      
 fig2.update_yaxes(
-     title_text = "ELN Usage", range = (0,6500),
+     title_text = "ELN Usage", range = (0,2500),
      title_font=dict(size=30, family='Verdana', color='black'),
      tickfont=dict(family='Calibri', color='darkred', size=25))
      
