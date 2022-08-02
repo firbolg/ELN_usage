@@ -1,9 +1,5 @@
 import os
-import json
-from collections import Counter
 import pandas as pd
-from mpl_toolkits.basemap import Basemap
-import matplotlib.pyplot as plt
 import glob
 import plotly.graph_objects as go
 
@@ -17,7 +13,7 @@ for f in csv_files:
     
     # read the csv file
     df = pd.read_excel(f)
-
+    # create list with totals for columns in each workbook
     name = f.split("\\")[-1]  
     name = name.split("_")
     logins = df['Logins Last 30 days'].sum()
@@ -29,6 +25,7 @@ for f in csv_files:
 
 df2 = pd.DataFrame(sums, columns=('Month','Year','Logins','Data Usage','Notebooks','Users'))
 
+# sort dataframe by calendar months
 sort_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
                 'September', 'October', 'November', 'December']
 
@@ -39,7 +36,7 @@ print(df2)
 
 
 
-
+# plot line chart 
 fig2 = go.Figure()
 
 fig2.add_trace(go.Scatter(
