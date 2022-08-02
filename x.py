@@ -20,15 +20,21 @@ for f in csv_files:
 
     name = f.split("\\")[-1]  
     name = name.split("_")
-    activities = df['Total Activities'].sum()
+    logins = df['Logins Last 30 days'].sum()
     data_use_MB = df['MB Used'].sum()
     data_use_GB = data_use_MB / 1000
     notebooks = df['Notebooks Owned'].sum()
-    logins = df['Total Logins'].sum()
-    sums.append((name[0],name[1],activities,data_use_GB,notebooks,logins))
+    users = df.shape[0]
+    sums.append((name[0],name[1],logins,data_use_GB,notebooks,users))
 
-df2 = pd.DataFrame(sums, columns=('Month','Year','Activities','Data Usage','Notebooks','Logins')) 
-#df2['Month'] = pd.Categorical(df['Month'], categories=months, ordered=True)
+df2 = pd.DataFrame(sums, columns=('Month','Year','Logins','Data Usage','Notebooks','Users'))
+
+sort_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
+                'September', 'October', 'November', 'December']
+
+df2.index = pd.CategoricalIndex(df2['Month'], categories=sort_order, ordered=True)
+
+df2 = df2.sort_index().reset_index(drop=True)
 print(df2)
 
 
@@ -37,29 +43,29 @@ print(df2)
 fig2 = go.Figure()
 
 fig2.add_trace(go.Scatter(
-     x= df2['Month'], y = df2['Notebooks'],
-     name = 'Notebooks',
+     x= df2['Month'], y = df2['Users'],
+     name = 'Total Users',
      mode = 'lines',
      line=dict(width=0.5, color='orange'),
      stackgroup = 'one'))
 
 fig2.add_trace(go.Scatter(
-     x= df2['Month'], y = df2['Data Usage'],
-     name = 'Data Usage',
+     x= df2['Month'], y = df2['Notebooks'],
+     name = 'Total Notebooks',
      mode = 'lines',
      line=dict(width=0.5,color='lightgreen'),
      stackgroup = 'one'))
      
 fig2.add_trace(go.Scatter(
-     x= df2['Month'], y = df2['Activities'],
-     name = 'Activities',
+     x= df2['Month'], y = df2['Data Usage'],
+     name = 'GB Data Used',
      mode = 'lines', 
      line=dict(width=0.5, color='blue'),
      stackgroup = 'one'))
      
 fig2.add_trace(go.Scatter(
      x= df2['Month'], y = df2['Logins'],
-     name = 'Logins',
+     name = 'Monthly Logins',
      mode = 'lines', 
      line=dict(width=0.5, color='darkred'),
      stackgroup = 'one'))
@@ -75,7 +81,7 @@ fig2.update_xaxes(
      tickfont=dict(family='Calibri', color='darkred', size=25))
      
 fig2.update_yaxes(
-     title_text = "ELN Usage", range = (0,500000),
+     title_text = "ELN Usage", range = (0,6500),
      title_font=dict(size=30, family='Verdana', color='black'),
      tickfont=dict(family='Calibri', color='darkred', size=25))
      
