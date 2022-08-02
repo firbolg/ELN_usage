@@ -21,10 +21,11 @@ for f in csv_files:
     name = f.split("\\")[-1]  
     name = name.split("_")
     activities = df['Total Activities'].sum()
-    data_use = df['MB Used'].sum()
+    data_use_MB = df['MB Used'].sum()
+    data_use_GB = data_use_MB / 1000
     notebooks = df['Notebooks Owned'].sum()
     logins = df['Total Logins'].sum()
-    sums.append((name[0],name[1],activities,data_use,notebooks,logins))
+    sums.append((name[0],name[1],activities,data_use_GB,notebooks,logins))
 
 df2 = pd.DataFrame(sums, columns=('Month','Year','Activities','Data Usage','Notebooks','Logins')) 
 #df2['Month'] = pd.Categorical(df['Month'], categories=months, ordered=True)
@@ -36,8 +37,8 @@ print(df2)
 fig2 = go.Figure()
 
 fig2.add_trace(go.Scatter(
-     x= df2['Month'], y = df2['Activities'],
-     name = 'Activities',
+     x= df2['Month'], y = df2['Notebooks'],
+     name = 'Notebooks',
      mode = 'lines',
      line=dict(width=0.5, color='orange'),
      stackgroup = 'one'))
@@ -50,8 +51,8 @@ fig2.add_trace(go.Scatter(
      stackgroup = 'one'))
      
 fig2.add_trace(go.Scatter(
-     x= df2['Month'], y = df2['Notebooks'],
-     name = 'Notebooks',
+     x= df2['Month'], y = df2['Activities'],
+     name = 'Activities',
      mode = 'lines', 
      line=dict(width=0.5, color='blue'),
      stackgroup = 'one'))
@@ -74,7 +75,7 @@ fig2.update_xaxes(
      tickfont=dict(family='Calibri', color='darkred', size=25))
      
 fig2.update_yaxes(
-     title_text = "ELN Usage", range = (0,160),
+     title_text = "ELN Usage", range = (0,500000),
      title_font=dict(size=30, family='Verdana', color='black'),
      tickfont=dict(family='Calibri', color='darkred', size=25))
      
