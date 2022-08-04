@@ -4,12 +4,33 @@ import glob
 import plotly.graph_objects as go
 
 
-path = r"C:\Users\Levi\projects\ELN_usage\2021_test"
-csv_files = glob.glob(os.path.join(path, "*.xlsx"))
-  
+path = r"C:\Users\dolanl\Projects\ELN_usage\2021_test"
+
+
+def get_files(dir_tree):
+    # create a list of file and sub directories 
+    # names in the given directory 
+    list_dir = os.listdir(dir_tree)
+    all_files = list()
+    # Iterate over all the entries
+    for name in list_dir:
+        # Create full path
+        full_path = os.path.join(dir_tree, name)
+        # If name is a directory then check for files within that directory 
+        if os.path.isdir(full_path):
+            all_files = all_files + get_files(full_path)
+        else:
+            all_files.append(full_path)
+                
+    return all_files
+
+
+files_list = get_files(path)
+
+     
 sums = []  
 # loop over the list of csv files
-for f in csv_files:
+for f in files_list:
     
     # read the csv file
     df = pd.read_excel(f)
@@ -22,7 +43,7 @@ for f in csv_files:
     notebooks = df['Notebooks Owned'].sum()
     users = df.shape[0]
     sums.append((name[0],name[1],logins,data_use_GB,notebooks,users))
-
+    
 df2 = pd.DataFrame(sums, columns=('Month','Year','Logins','Data Usage','Notebooks','Users'))
 
 # sort dataframe by calendar months
@@ -85,4 +106,15 @@ fig2.update_yaxes(
 fig2.write_image(path + "figarea2.png")
 
 fig2.show()
+
+
+        
+        
+        
+
+
+      
+
+
+
 
