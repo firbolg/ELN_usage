@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 
 
 path = r"C:\Users\dolanl\Projects\ELN_usage\2021_test"
+#copied folder with all stats: "O365-IN-RLML-RLML Librarians - Lab Archives Metrics"
 
 
 def get_files(dir_tree):
@@ -31,7 +32,7 @@ files_list = get_files(path)
 sums = []  
 # loop over the list of csv files
 for f in files_list:
-    
+#TODO check if each (str) item in files_list .endswith "User_Stats"
     # read the csv file
     df = pd.read_excel(f)
     # create list with totals for columns in each workbook
