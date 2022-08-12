@@ -6,18 +6,15 @@ import plotly.graph_objects as go
 
 path = r"C:\Users\dolanl\Projects\ELN_usage\O365-IN-RLML-RLML Librarians - Lab Archives Metrics"
 
-
-
+# Loop over directories, check for subdirectories, populate list of paths to files
 def get_files(dir_tree):
-    # create a list of file and sub directories 
-    # names in the given directory 
+    # Directory names in the given directory 
     list_dir = os.listdir(dir_tree)
     all_files = list()
-    # Iterate over all the entries
     for name in list_dir:
-        # Create full path
+        # Construct path name
         full_path = os.path.join(dir_tree, name)
-        # If name is a directory then check for files within that directory 
+        # If name is a directory then check for files or subdirectories  
         if os.path.isdir(full_path):
             all_files = all_files + get_files(full_path)
         else:
@@ -28,73 +25,72 @@ def get_files(dir_tree):
 
 files_list = get_files(path)
 
-     
-sums = []  
-# loop over the list of csv files
-for f in files_list:
+
+def monthly_data(files):    
+     sums = []  
+# Loop over the list of files
+     for f in files:
     # TODO endswith not catching filename.  fix to remove df.columns check
-     if f.endswith("User_Stats.xlsx"):
-          df = pd.read_excel(f)
-          if 'Logins Last 30 days' in df.columns:
-    # create list with totals for columns in each workbook
-               name = f.split("\\")[-1]  
-               name = name.split("_")
-               logins = df['Logins Last 60 days'].sum()
-               data_use_MB = df['MB Used'].sum()
-               data_use_GB = data_use_MB / 1000
-               notebooks = df['Notebooks Owned'].sum()
-               users = df.shape[0]
-               sums.append((name[0],name[1],logins,data_use_GB,notebooks,users))
+          if f.endswith("User_Stats.xlsx"):
+               df = pd.read_excel(f)
+               if 'Logins Last 30 days' in df.columns:
+    # Create list with totals for desired columns from each workbook
+                    name = f.split("\\")[-1]  
+                    name = name.split("_")
+                    logins = df['Logins Last 60 days'].sum()
+                    data_use_MB = df['MB Used'].sum()
+                    data_use_GB = data_use_MB / 1000
+                    notebooks = df['Notebooks Owned'].sum()
+                    users = df.shape[0]
+                    sums.append((name[0],name[1],logins,data_use_GB,notebooks,users))
+               else:
+                    pass
           else:
                pass
-     else:
-         pass
+     return(sums)
+
+
+data = monthly_data(files_list)
 
     
-df2 = pd.DataFrame(sums, columns=('Month','Year','Logins','Data Usage','Notebooks','Users'))
+df2 = pd.DataFrame(data, columns=('Month','Year','Logins','Data Usage','Notebooks','Users'))
 
-df2 = df2.sort_values('Year')
+df2 = df2.groupby('Year')
 
-#TODO group by year, then sort by month
-# https://realpython.com/pandas-groupby/
+# Create a list of dataframes sorted by year and month, then concatenate list items
+dfs = []
+for yr, data in df2:
+     dfs.append(data)
 
-# sort dataframe by calendar months
-sort_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
-                'September', 'October', 'November', 'December']
+dfs = pd.concat(dfs)
 
-df2.index = pd.CategoricalIndex(df2['Month'], categories=sort_order, ordered=True)
+print(dfs)
 
-df2 = df2.sort_index().reset_index(drop=True)
-print(df2)
-
-
-
-# plot line chart 
 fig2 = go.Figure()
 
 fig2.add_trace(go.Scatter(
-     x= df2['Month'], y = df2['Users'],
+     x= dfs['Month'], y = dfs['Users'],
      name = 'Total Users',
      mode = 'lines',
      line=dict(width=5, color='orange'),
      ))
 
 fig2.add_trace(go.Scatter(
-     x= df2['Month'], y = df2['Notebooks'],
+     x= dfs['Month'], y = dfs['Notebooks'],
      name = 'Total Notebooks',
      mode = 'lines',
      line=dict(width=5,color='lightgreen')
      ))
      
 fig2.add_trace(go.Scatter(
-     x= df2['Month'], y = df2['Data Usage'],
+     x= dfs['Month'], y = dfs['Data Usage'],
      name = 'GB Data',
      mode = 'lines', 
      line=dict(width=5, color='blue')
      ))
      
 fig2.add_trace(go.Scatter(
-     x= df2['Month'], y = df2['Logins'],
+     x= dfs['Month'], y = dfs['Logins'],
      name = 'Monthly Logins',
      mode = 'lines', 
      line=dict(width=5, color='darkred')
@@ -118,3 +114,4 @@ fig2.update_yaxes(
 fig2.write_image(path + "figarea2.png")
 
 fig2.show()
+
