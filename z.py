@@ -2,6 +2,8 @@ import os
 import pandas as pd
 import glob
 import plotly.graph_objects as go
+import plotly.io as pio
+
 
 
 path = r"C:\Users\dolanl\Projects\ELN_usage\O365-IN-RLML-RLML Librarians - Lab Archives Metrics"
@@ -64,54 +66,58 @@ for yr, data in df2:
 
 dfs = pd.concat(dfs)
 
+dfs["Monthly"] = dfs["Month"] + " " + dfs["Year"]
 print(dfs)
 
-fig2 = go.Figure()
+fig = go.Figure()
 
-fig2.add_trace(go.Scatter(
-     x= dfs['Month'], y = dfs['Users'],
+fig.add_trace(go.Scatter(
+     x= dfs['Monthly'], y = dfs['Users'],
      name = 'Total Users',
      mode = 'lines',
-     line=dict(width=5, color='orange'),
+     line=dict(width=10, color='orange'),
      ))
 
-fig2.add_trace(go.Scatter(
-     x= dfs['Month'], y = dfs['Notebooks'],
+fig.add_trace(go.Scatter(
+     x= dfs['Monthly'], y = dfs['Notebooks'],
      name = 'Total Notebooks',
      mode = 'lines',
-     line=dict(width=5,color='lightgreen')
+     line=dict(width=10,color='lightgreen')
      ))
      
-fig2.add_trace(go.Scatter(
-     x= dfs['Month'], y = dfs['Data Usage'],
+fig.add_trace(go.Scatter(
+     x= dfs['Monthly'], y = dfs['Data Usage'],
      name = 'GB Data',
      mode = 'lines', 
-     line=dict(width=5, color='blue')
+     line=dict(width=10, color='blue')
      ))
      
-fig2.add_trace(go.Scatter(
-     x= dfs['Month'], y = dfs['Logins'],
+fig.add_trace(go.Scatter(
+     x= dfs['Monthly'], y = dfs['Logins'],
      name = 'Monthly Logins',
      mode = 'lines', 
-     line=dict(width=5, color='darkred')
+     line=dict(width=10, color='darkred')
      ))
      
-fig2.update_layout(
+fig.update_layout(
      title = "LabArchives ELN Usage",
      title_font_size = 40, legend_font_size = 20,
-     width = 1600, height = 1400)
+     width = 1200, height = 1200,
+     autosize = True
+     )
      
-fig2.update_xaxes(
+fig.update_xaxes(
      title_text = 'Month',
      title_font=dict(size=30, family='Verdana', color='black'),
      tickfont=dict(family='Calibri', color='darkred', size=25))
      
-fig2.update_yaxes(
-     title_text = "ELN Usage", range = (0,2500),
+fig.update_yaxes(
+     title_text = "ELN Usage", range = (0,4000),
      title_font=dict(size=30, family='Verdana', color='black'),
      tickfont=dict(family='Calibri', color='darkred', size=25))
      
-fig2.write_image(path + "figarea2.png")
+fig.write_image(path + "figarea2.png")
 
-fig2.show()
+fig.show()
 
+pio.write_html(fig, file='index.html', auto_open=True)
